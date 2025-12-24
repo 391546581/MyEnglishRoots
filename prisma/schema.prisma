@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Root {
+  id          Int      @id @default(autoincrement())
+  text        String   @unique
+  meaning     String?
+  familiarity String   @default("NEW") // NEW, LEARNING, MASTERED
+  words       Word[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Word {
+  id          Int            @id @default(autoincrement())
+  text        String         @unique
+  definition  String?
+  familiarity String         @default("NEW") // NEW, LEARNING, MASTERED
+  level       String?        @default("N/A") // CEFR Level
+  roots       Root[]         
+  notes       AnalysisNote[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model AnalysisNote {
+  id        Int      @id @default(autoincrement())
+  content   String
+  wordId    Int
+  word      Word     @relation(fields: [wordId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,10 @@
+terraform
+Dockerfile
+.dockerignore
+.git
+.next
+node_modules
+npm-debug.log
+README.md
+.env*.local
+.env
