@@ -17,3 +17,12 @@ export async function toggleFamiliarity(wordId: number, currentStatus: string) {
     revalidatePath('/search');
     revalidatePath('/word/[text]');
 }
+
+import { redirect } from 'next/navigation';
+
+export async function searchAction(formData: FormData) {
+    const query = formData.get('query')?.toString();
+    if (query) {
+        redirect(`/search?q=${encodeURIComponent(query)}`);
+    }
+}

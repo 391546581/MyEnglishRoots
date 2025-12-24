@@ -1,15 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-
-async function search(formData: FormData) {
-  'use server';
-  const query = formData.get('query')?.toString();
-  if (query) {
-    redirect(`/search?q=${encodeURIComponent(query)}`);
-  }
-}
+import SearchBar from '@/app/components/SearchBar';
 
 async function refreshRoots() {
   'use server';
@@ -52,14 +44,9 @@ export default async function Home() {
         </div>
 
         {/* Search */}
-        <form action={search} className="relative max-w-xl mx-auto">
-          <input
-            name="query"
-            type="text"
-            placeholder="Search root (e.g. ped) or word..."
-            className="w-full px-6 py-4 rounded-full bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-teal-500 text-lg placeholder:text-neutral-600 shadow-xl transition-all"
-          />
-        </form>
+        <div className="max-w-xl mx-auto">
+          <SearchBar />
+        </div>
 
         {/* Dashboard / Recommended Roots */}
         <section>
