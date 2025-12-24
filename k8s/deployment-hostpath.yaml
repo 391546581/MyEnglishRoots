@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rootflow
+  labels:
+    app: rootflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rootflow
+  template:
+    metadata:
+      labels:
+        app: rootflow
+    spec:
+      containers:
+      - name: rootflow
+        image: your-registry/rootflow:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          value: "file:/app/prisma/dev.db"
+        volumeMounts:
+        - name: db-volume
+          mountPath: /app/prisma
+        - name: data-volume
+          mountPath: /app/data
+      volumes:
+      - name: db-volume
+        hostPath:
+          # 注意：如果是 Windows Docker Desktop，路径格式应为 /host_mnt/d/MyEnglishRoots/rootflow/prisma
+          # 如果是 Linux，直接写绝对路径
+          path: /host_mnt/d/MyEnglishRoots/rootflow/prisma
+          type: Directory
+      - name: data-volume
+        hostPath:
+          path: /host_mnt/d/MyEnglishRoots/rootflow/data
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rootflow-service
+spec:
+  selector:
+    app: rootflow
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: NodePort

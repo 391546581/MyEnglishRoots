@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rootflow
+  labels:
+    app: rootflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rootflow
+  template:
+    metadata:
+      labels:
+        app: rootflow
+    spec:
+      containers:
+      - name: rootflow
+        image: your-registry/rootflow:latest # 替换为您构建的镜像
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          value: "file:/app/prisma/dev.db" # 容器内路径
+        - name: NEXT_PUBLIC_SITE_URL
+          value: "http://rootflow.local"
+        volumeMounts:
+        - name: db-storage
+          mountPath: /app/prisma
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: rootflow-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rootflow-service
+spec:
+  selector:
+    app: rootflow
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer # 如果是本地环境，可以用 NodePort
